@@ -1,53 +1,45 @@
-# ---------------头文件---------------
-import random
-import sys
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QPainter, QBrush, QColor, QPainterPath
-from PyQt5.QtCore import Qt
-# ---------------绘制云朵---------------
+# 头文件-----------------------------------------------------------------------------------------------------------------
+from PyQt5 import QtCore
+from PyQt5.QtGui import QPainter, QBrush, QPainterPath
+# 云朵类-----------------------------------------------------------------------------------------------------------------
 class Clouds():
-    def __init__(self, x, y, radius, color, shift, random):
-        # ---------------坐标---------------
-        self.x = x
-        self.y = y
-        # ---------------随机数---------------
-        #TODO:云层飘动的效果可以有但是我不会做 该参数没用到
-        self.random = random
-        # ---------------半径---------------
-        self.radius = radius
+    def __init__(self, x, y, radius, color, shift, random_factors):
         # ---------------颜色---------------
         self.color = color
-        # ---------------云层距离---------------
-        self.shift = shift
         # ---------------组成圆形---------------
-        self.clouds = [
-            {"x": 1.30 * x, "y": (2.53 * y + self.shift), "radius": 0.92 * radius},
-            {"x": 1.90 * x, "y": (2.40 * y + self.shift), "radius": 1.05 * radius},
-            {"x": 2.79 * x, "y": (2.13 * y + self.shift), "radius": 1.03 * radius},
-            {"x": 3.64 * x, "y": (2.19 * y + self.shift), "radius": 0.95 * radius},
-            {"x": 4.33 * x, "y": (1.72 * y + self.shift), "radius": 0.75 * radius},
-            {"x": 4.97 * x, "y": (1.37 * y + self.shift), "radius": 0.97 * radius}
-        ]
-    # TODO: 这里会吃掉大量的性能，可以优化
+        base_params  =  [
+            {"x_coeff": 1.40, "y_coeff": 2.53, "radius_coeff": 0.92},
+            {"x_coeff": 1.90, "y_coeff": 2.40, "radius_coeff": 1.05},
+            {"x_coeff": 2.79, "y_coeff": 2.13, "radius_coeff": 1.03},
+            {"x_coeff": 3.64, "y_coeff": 2.19, "radius_coeff": 0.95},
+            {"x_coeff": 4.33, "y_coeff": 1.72, "radius_coeff": 0.75},
+            {"x_coeff": 4.97, "y_coeff": 1.37, "radius_coeff": 0.97},
+                        ]
+        self.clouds = []
+        for i in range(6):
+            params = base_params[i]                                             # 圆形参数
+            rf = random_factors[i]                                              # 随机因子
+            x_offset = (rf - 0.5) * 20                                          # 计算随机偏移
+            y_offset = (rf - 0.5) * 20                                          # 计算随机偏移
+            self.clouds.append({"x": params["x_coeff"] * x + x_offset + shift, "y": params["y_coeff"] * y + shift + y_offset, "radius": params["radius_coeff"] * radius})
+# 绘制云朵---------------------------------------------------------------------------------------------------------------
     def build_path(self):
         path = QPainterPath()
         first = True
         for cloud in self.clouds:
             circle_path = QPainterPath()
             circle_path.addEllipse(QtCore.QPointF(cloud["x"], cloud["y"]), cloud["radius"], cloud["radius"])
-            if first:
-                path = circle_path  # 设置第一个圆的路径
-                first = False
-            else:
-                path = path.united(circle_path)  # 合并下一个圆的路径
+            path = path.united(circle_path) if not first else circle_path
+            first = False
         return path
     def draw_clouds(self, painter):
         path = self.build_path()  # 创建云朵的路径
         painter.setBrush(QBrush(self.color))
-        painter.setPen(QtCore.Qt.NoPen)  # No border
         painter.setRenderHint(QPainter.Antialiasing)
         painter.drawPath(path)  # 绘制路径
+
+
+
 
 
 

@@ -1,29 +1,21 @@
-# ---------------头文件---------------
-import random
-import sys
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QPainter, QBrush, QColor, QPainterPath
+# 头文件-----------------------------------------------------------------------------------------------------------------
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import QBrush, QColor, QPainterPath
 from PyQt5.QtCore import Qt
-# ---------------绘制阴影---------------
+# 阴影类-----------------------------------------------------------------------------------------------------------------
 class Shadows():
-    def __init__(self, x, y, radius, color1, color2, color3):
-        # ---------------坐标---------------
-        self.x = x
-        self.y = y
-        # ---------------半径---------------
-        self.radius = radius
+    def __init__(self, x, y, radius):
         # ---------------颜色---------------
-        self.color1 = color1
-        self.color2 = color2
-        self.color3 = color3
+        self.color_circle1 = QtGui.QColor(255, 255, 255, 52)  # 内圈光晕颜色
+        self.color_circle2 = QtGui.QColor(255, 255, 255, 26)  # 中圈光晕颜色
+        self.color_circle3 = QtGui.QColor(255, 255, 255, 13)  # 外圈光晕颜色
         # ---------------组成---------------
-        self.circle = [
-            {"x": 1 * self.x, "y": self.y, "radius": 1.25 * self.radius, "color": self.color1},
-            {"x": 1 * self.x, "y": self.y, "radius": 1.75 * self.radius, "color": self.color2},
-            {"x": 1 * self.x, "y": self.y, "radius": 2.25 * self.radius, "color": self.color3},
-
-        ]
+        self.circle =   [
+            {"x": 1 * x, "y": y, "radius": 1.35 * radius, "color": self.color_circle1},
+            {"x": 1 * x, "y": y, "radius": 1.75 * radius, "color": self.color_circle2},
+            {"x": 1 * x, "y": y, "radius": 2.25 * radius, "color": self.color_circle3},
+                        ]
+# 绘制阴影---------------------------------------------------------------------------------------------------------------
     def draw_shadow(self, painter):
         for shadow in self.circle:
             path = QPainterPath()
